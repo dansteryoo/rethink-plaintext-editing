@@ -121,7 +121,6 @@ function PlaintextFilesChallenge() {
         return (each.value = value);
       }
     })
-    console.log({ files });
     window.localStorage.setItem(file.name, value);
   };
 
