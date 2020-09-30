@@ -7,13 +7,16 @@ import classNames from 'classnames';
 import { listFiles } from '../files';
 
 // Used below, these need to be registered
-import MarkdownEditor from '../MarkdownEditor';
+import MarkdownEditor from '../components/MarkdownEditor';
 import PlaintextEditor from '../components/PlaintextEditor';
+import SyntaxPreview from '../components/SyntaxPreview';
 
 import IconPlaintextSVG from '../public/icon-plaintext.svg';
 import IconMarkdownSVG from '../public/icon-markdown.svg';
 import IconJavaScriptSVG from '../public/icon-javascript.svg';
 import IconJSONSVG from '../public/icon-json.svg';
+
+import  { ShortUrls } from '../components/ShortUrls'
 
 import css from './style.module.css';
 
@@ -99,8 +102,10 @@ Previewer.propTypes = {
 
 // Uncomment keys to register editors for media types
 const REGISTERED_EDITORS = {
-  // "text/plain": PlaintextEditor,
-  // "text/markdown": MarkdownEditor,
+  'text/plain': PlaintextEditor,
+  'text/markdown': MarkdownEditor,
+  'text/javascript': SyntaxPreview,
+  'application/json': SyntaxPreview
 };
 
 function PlaintextFilesChallenge() {
@@ -112,10 +117,14 @@ function PlaintextFilesChallenge() {
     setFiles(files);
   }, []);
 
-  const write = file => {
-    console.log('Writing soon... ', file.name);
-
-    // TODO: Write the file to the `files` array
+  const write = (file, value) => {
+    files.forEach(each => {
+      if (each.name === file.name) {
+        return (each.value = value);
+      }
+    })
+    console.log({ files });
+    window.localStorage.setItem(file.name, value);
   };
 
   const Editor = activeFile ? REGISTERED_EDITORS[activeFile.type] : null;
@@ -134,7 +143,9 @@ function PlaintextFilesChallenge() {
             than rendering and editing plaintext? Not much, as it turns out.
           </div>
         </header>
-
+        <div className="short_url">
+          <ShortUrls />
+        </div>
         <FilesTable
           files={files}
           activeFile={activeFile}

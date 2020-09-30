@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import css from './style.css';
+let Markdown = require('react-markdown');
 
-function PlaintextEditor({ file, write }) {
+function MarkdownEditor({ file, write }) {
   const editorRef = useRef();
   const [editorLoaded, setEditorLoaded] = useState(false);
   const { CKEditor, ClassicEditor } = editorRef.current || {};
-  const [value, setValue] = useState({});
+  const [value, setValue] = useState(value);
 
   useEffect(async () => {
     editorRef.current = {
@@ -18,28 +19,33 @@ function PlaintextEditor({ file, write }) {
   }, []);
 
 
+  useEffect(() => {
+    localStorage.setItem(file.name, value);
+  }, [value]);
+
   return editorLoaded ? (
     <div className={css.editor_wrapper}>
       <CKEditor
         editor={ClassicEditor}
         data={value || ''}
-        onChange={(e, editor) => {
-          const data = editor.getData();
+        onChange={editor => {
+          const data = editor?.getData();
           setValue(data);
           write(file, value);
         }}
       />
-      <div className={css.editor_preview}>{value}</div>
+      <div className={css.editor_preview}>
+        <Markdown source={value} escapeHtml={false} />
+      </div>
     </div>
   ) : (
     <div>Editor loading</div>
   );
-  
 }
 
-PlaintextEditor.propTypes = {
+MarkdownEditor.propTypes = {
   file: PropTypes.object,
   write: PropTypes.func
 };
 
-export default PlaintextEditor;
+export default MarkdownEditor;

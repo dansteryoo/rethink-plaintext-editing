@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import css from './style.css';
+import { CopyBlock, atomOneDark } from 'react-code-blocks';
 
-function PlaintextEditor({ file, write }) {
+function SyntaxPreview({ file, write }) {
   const editorRef = useRef();
   const [editorLoaded, setEditorLoaded] = useState(false);
   const { CKEditor, ClassicEditor } = editorRef.current || {};
-  const [value, setValue] = useState({});
+  const [value, setValue] = useState(value);
 
   useEffect(async () => {
     editorRef.current = {
@@ -23,23 +24,24 @@ function PlaintextEditor({ file, write }) {
       <CKEditor
         editor={ClassicEditor}
         data={value || ''}
-        onChange={(e, editor) => {
-          const data = editor.getData();
+        onChange={editor => {
+          const data = editor?.getData();
           setValue(data);
           write(file, value);
         }}
       />
-      <div className={css.editor_preview}>{value}</div>
+      <div className={css.editor_preview}>
+        <CopyBlock text={value} language="javascript" theme={atomOneDark} />
+      </div>
     </div>
   ) : (
     <div>Editor loading</div>
   );
-  
 }
 
-PlaintextEditor.propTypes = {
+SyntaxPreview.propTypes = {
   file: PropTypes.object,
   write: PropTypes.func
 };
 
-export default PlaintextEditor;
+export default SyntaxPreview;
