@@ -9,12 +9,12 @@ function MarkdownEditor({ file, write }) {
   const { CKEditor, ClassicEditor } = editorRef.current || {};
   const [value, setValue] = useState(value);
 
-  useEffect(async () => {
+  useEffect(() => {
+    (async () => setValue(await file.text()))();
     editorRef.current = {
       CKEditor: require('@ckeditor/ckeditor5-react'),
       ClassicEditor: require('@ckeditor/ckeditor5-build-classic')
     };
-    setValue(await file.text());
     setEditorLoaded(true);
   }, []);
 
@@ -28,14 +28,19 @@ function MarkdownEditor({ file, write }) {
       <CKEditor
         editor={ClassicEditor}
         data={value || ''}
-        onChange={editor => {
-          const data = editor?.getData();
-          setValue(data);
-          write(file, value);
-        }}
+        // onChange={editor => {
+        //   const data = editor?.getData();
+        //   setValue(data);
+        //   write(file, value);
+        // }}
       />
       <div className={css.editor_preview}>
-        <Markdown source={value} escapeHtml={false} />
+        <Markdown
+          source={
+            <div className={css.editor_preview}>{JSON.stringify(value)}</div>
+          }
+          escapeHtml={false}
+        />
       </div>
     </div>
   ) : (

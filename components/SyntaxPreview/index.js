@@ -6,17 +6,38 @@ import { CopyBlock, atomOneDark } from 'react-code-blocks';
 function SyntaxPreview({ file, write }) {
   const editorRef = useRef();
   const [editorLoaded, setEditorLoaded] = useState(false);
-  const { CKEditor, ClassicEditor } = editorRef.current || {};
+  const { CKEditor, ClassicEditor, CodeBlock } = editorRef.current || {};
   const [value, setValue] = useState(value);
 
-  useEffect(async () => {
+  useEffect(() => {
+    (async () => setValue(await file.text()))();
     editorRef.current = {
       CKEditor: require('@ckeditor/ckeditor5-react'),
-      ClassicEditor: require('@ckeditor/ckeditor5-build-classic')
+      ClassicEditor: require('@ckeditor/ckeditor5-build-classic'),
+      Codeblock: require('@ckeditor/ckeditor5-code-block/src/codeblock')
     };
-    setValue(await file.text());
     setEditorLoaded(true);
   }, []);
+
+  const editorConfig = {
+    toolbar: [
+      'heading',
+      '|',
+      'bold',
+      'italic',
+      'link',
+      'bulletedList',
+      'numberedList',
+      'blockQuote',
+      'codeBlock'
+    ],
+    plugins: [CodeBlock],
+    codeBlock: {
+      languages: [
+        { language: 'javascript', label: 'Javascript' },
+      ]
+    }
+  };
 
 
   return editorLoaded ? (
@@ -24,14 +45,15 @@ function SyntaxPreview({ file, write }) {
       <CKEditor
         editor={ClassicEditor}
         data={value || ''}
-        onChange={editor => {
-          const data = editor?.getData();
+        config={editorConfig}
+        onChange={(e, editor) => {
+          const data = editor.getData();
           setValue(data);
           write(file, value);
         }}
       />
       <div className={css.editor_preview}>
-        <CopyBlock text={value} language="javascript" theme={atomOneDark} />
+        {value}
       </div>
     </div>
   ) : (

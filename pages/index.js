@@ -16,8 +16,6 @@ import IconMarkdownSVG from '../public/icon-markdown.svg';
 import IconJavaScriptSVG from '../public/icon-javascript.svg';
 import IconJSONSVG from '../public/icon-json.svg';
 
-import  { ShortUrls } from '../components/ShortUrls'
-
 import css from './style.module.css';
 
 const TYPE_TO_ICON = {
@@ -143,9 +141,7 @@ function PlaintextFilesChallenge() {
             than rendering and editing plaintext? Not much, as it turns out.
           </div>
         </header>
-        <div className="short_url">
-          <ShortUrls />
-        </div>
+        
         <FilesTable
           files={files}
           activeFile={activeFile}
